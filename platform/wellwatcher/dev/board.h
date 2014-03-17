@@ -121,11 +121,11 @@
 #define UART_0_TX_PORT             GPIO_A_NUM
 #define UART_0_TX_PIN              1
 
-#define UART_1_RX_PORT             GPIO_A_NUM
-#define UART_1_RX_PIN              2
+#define UART_1_RX_PORT             GPIO_C_NUM
+#define UART_1_RX_PIN              5
 
-#define UART_1_TX_PORT             GPIO_A_NUM
-#define UART_1_TX_PIN              3
+#define UART_1_TX_PORT             GPIO_C_NUM
+#define UART_1_TX_PIN              6
 
 #define UART_1_CTS_PORT            GPIO_B_NUM
 #define UART_1_CTS_PIN             0
