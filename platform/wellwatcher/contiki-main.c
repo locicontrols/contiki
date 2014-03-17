@@ -183,7 +183,7 @@ main(void)
   PRINTF("%s\n", NETSTACK_RDC.name);
 
   /* Initialise the H/W RNG engine. */
-  random_init(0);
+  // random_init(0);
 
   udma_init();
 
