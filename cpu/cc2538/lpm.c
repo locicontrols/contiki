@@ -38,6 +38,7 @@
 #include "contiki-conf.h"
 #include "sys/energest.h"
 #include "sys/process.h"
+#include "dev/ioc.h"
 #include "dev/sys-ctrl.h"
 #include "dev/scb.h"
 #include "dev/rfcore-xreg.h"
@@ -109,6 +110,11 @@ static uint8_t max_pm;
 
 static lpm_periph_permit_pm1_func_t
 periph_permit_pm1_funcs[LPM_PERIPH_PERMIT_PM1_FUNCS_MAX];
+
+void on_new_pm_mode(int m) {
+	// The application project should override this function.
+}
+
 /*---------------------------------------------------------------------------*/
 static bool
 periph_permit_pm1(void)
@@ -145,6 +151,7 @@ enter_pm0(void)
     sleep_enter_time = RTIMER_NOW();
   }
 
+  on_new_pm_mode(0);
   assert_wfi();
 
   /* We reach here when the interrupt context that woke us up has returned */
@@ -195,6 +202,7 @@ select_16_mhz_rcosc(void)
 void
 lpm_exit()
 {
+  on_new_pm_mode(-1);
   if((REG(SYS_CTRL_PMCTL) & SYS_CTRL_PMCTL_PM3) == SYS_CTRL_PMCTL_PM0) {
     /* We either just exited PM0 or we were not sleeping in the first place.
      * We don't need to do anything clever */
@@ -332,6 +340,7 @@ lpm_enter()
     ENERGEST_OFF(ENERGEST_TYPE_LPM);
   } else {
     /* All clear. Assert WFI and drop to PM1/2. This is now un-interruptible */
+    on_new_pm_mode(REG(SYS_CTRL_PMCTL) & SYS_CTRL_PMCTL_PM3);
     assert_wfi();
   }
 
