@@ -35,6 +35,9 @@
  * \file
  * Implementation of the cc2538 UART driver
  */
+
+#include <stdio.h>
+
 #include "contiki.h"
 #include "sys/energest.h"
 #include "dev/sys-ctrl.h"
@@ -164,6 +167,7 @@ void
 uart1_isr(void)
 {
   uint16_t mis;
+  uint32_t dr;
 
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
 
@@ -175,16 +179,18 @@ uart1_isr(void)
 
   if(mis & (UART_MIS_RXMIS | UART_MIS_RTMIS)) {
     while(!(REG(UART_1_BASE | UART_FR) & UART_FR_RXFE)) {
+      dr = REG(UART_1_BASE | UART_DR);
+      if (dr & 0xffffff00) printf("Contiki: UART1 DR = 0x%08lx!\r\n", dr);
       if(input_handler != NULL) {
-        input_handler((unsigned char)(REG(UART_1_BASE | UART_DR) & 0xFF));
+        input_handler(dr & 0xff);
       } else {
         /* To prevent an Overrun Error, we need to flush the FIFO even if we
          * don't have an input_handler. Use mis as a data trash can */
-        mis = REG(UART_1_BASE | UART_DR);
       }
     }
   } else if(mis & (UART_MIS_OEMIS | UART_MIS_BEMIS | UART_MIS_FEMIS)) {
     /* ISR triggered due to some error condition */
+    printf("Contiki: UART1 MIS = 0x%04x. RESET!\r\n", mis);
     reset();
   }
 
