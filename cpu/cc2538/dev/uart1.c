@@ -180,7 +180,11 @@ uart1_isr(void)
   if(mis & (UART_MIS_RXMIS | UART_MIS_RTMIS)) {
     while(!(REG(UART_1_BASE | UART_FR) & UART_FR_RXFE)) {
       dr = REG(UART_1_BASE | UART_DR);
+
+#if UARTS_DEBUG
       if (dr & 0xffffff00) printf("Contiki: UART1 DR = 0x%08lx!\r\n", dr);
+#endif
+
       if(input_handler != NULL) {
         input_handler(dr & 0xff);
       } else {
@@ -190,7 +194,11 @@ uart1_isr(void)
     }
   } else if(mis & (UART_MIS_OEMIS | UART_MIS_BEMIS | UART_MIS_FEMIS)) {
     /* ISR triggered due to some error condition */
+
+#if UARTS_DEBUG
     printf("Contiki: UART1 MIS = 0x%04x. RESET!\r\n", mis);
+#endif
+
     reset();
   }
 
