@@ -247,7 +247,9 @@ typedef uint32_t rtimer_clock_t;
 #define NETSTACK_CONF_FRAMER  framer_802154
 #endif
 
+#ifndef NETSTACK_CONF_RADIO
 #define NETSTACK_CONF_RADIO   cc2538_rf_driver
+#endif
 /** @} */
 /*---------------------------------------------------------------------------*/
 /**
