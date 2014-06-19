@@ -318,6 +318,41 @@ process_nevents(void)
   return nevents + poll_requested;
 }
 /*---------------------------------------------------------------------------*/
+void
+process_dump_events(void)
+{
+  process_num_events_t n, m;
+  process_event_t ev;
+  const char* known_events[] = {
+    "NONE",
+    "INIT",
+    "POLL",
+    "EXIT",
+    "SERVICE_REMOVED",
+    "CONTINUE",
+    "MSG",
+    "EXITED",
+    "TIMER",
+    "COM",
+    "MAX",
+  };
+
+  printf("#  ev                     data       process\n");
+  printf("-- ---------------------- ---------- ----------\n");
+  for (n = 0; n < nevents; n++) {
+    m = (fevent + n) % PROCESS_CONF_NUMEVENTS;
+    ev = events[m].ev;
+    printf(
+      "%2u 0x%02x = %-15s 0x%08x 0x%08x\n",
+      n,
+      ev,
+      ( (ev >= PROCESS_EVENT_NONE) && (ev <= PROCESS_EVENT_MAX) )? known_events[ev - PROCESS_EVENT_NONE] : "Unknown",
+      events[m].data,
+      events[m].p
+    );
+  }
+}
+/*---------------------------------------------------------------------------*/
 int
 process_post(struct process *p, process_event_t ev, process_data_t data)
 {
@@ -338,6 +373,7 @@ process_post(struct process *p, process_event_t ev, process_data_t data)
     } else {
       printf("soft panic: event queue is full when event %d was posted to %s frpm %s\n", ev, PROCESS_NAME_STRING(p), PROCESS_NAME_STRING(process_current));
     }
+    process_dump_events();
     return PROCESS_ERR_FULL;
   }
   

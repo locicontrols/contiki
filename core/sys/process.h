@@ -519,6 +519,8 @@ CCIF int process_is_running(struct process *p);
  */
 int process_nevents(void);
 
+void process_dump_events(void);
+
 /** @} */
 
 CCIF extern struct process *process_list;
