@@ -60,6 +60,7 @@
 
 #define SLIP_END     0300
 /*---------------------------------------------------------------------------*/
+int putchar(int c) __attribute__((weak));
 int
 putchar(int c)
 {
