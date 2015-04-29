@@ -62,6 +62,7 @@ void cc2538_rf_rx_tx_isr(void);
 void cc2538_rf_err_isr(void);
 void udma_isr(void);
 void udma_err_isr(void);
+void adc_isr(void)             __attribute__ ((weak, alias("default_handler")));
 
 /* Boot Loader Backdoor selection */
 #if FLASH_CCA_CONF_BOOTLDR_BACKDOOR
@@ -153,7 +154,7 @@ void(*const vectors[])(void) =
   0,                          /* 27 Reserved */
   0,                          /* 28 Reserved */
   0,                          /* 29 Reserved */
-  default_handler,            /* 30 ADC Sequence 0 */
+  adc_isr,                    /* 30 ADC Sequence 0 */
   0,                          /* 31 Reserved */
   0,                          /* 32 Reserved */
   0,                          /* 33 Reserved */
