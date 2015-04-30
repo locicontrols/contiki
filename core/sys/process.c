@@ -43,10 +43,20 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 
 #include "sys/process.h"
 #include "sys/arg.h"
+
+inline __attribute__((always_inline))
+unsigned int arm_get_ipsr(void) {
+	unsigned int value;
+	asm volatile ("mrs %0, ipsr" : "=r" (value));
+	return value;
+}
+
+#define inISR() ( (arm_get_ipsr() & 0xff) != 0 )
 
 /*
  * Pointer to the currently running process structure.
@@ -356,6 +366,7 @@ process_dump_events(void)
 int
 process_post(struct process *p, process_event_t ev, process_data_t data)
 {
+  assert(!inISR());
   static process_num_events_t snum;
 
   if(PROCESS_CURRENT() == NULL) {
@@ -395,6 +406,7 @@ process_post(struct process *p, process_event_t ev, process_data_t data)
 void
 process_post_synch(struct process *p, process_event_t ev, process_data_t data)
 {
+  assert(!inISR());
   struct process *caller = process_current;
 
   call_process(p, ev, data);
